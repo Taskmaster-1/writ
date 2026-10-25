@@ -1,0 +1,38 @@
+# Writ with Postgres. Set WRIT_SECRET in .env first:  echo "WRIT_SECRET=$(openssl rand -base64 32)" > .env
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: writ
+      POSTGRES_PASSWORD: writ
+      POSTGRES_DB: writ
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U writ"]
+      interval: 2s
+      retries: 30
+
+  gateway:
+    build: .
+    environment:
+      DATABASE_URL: postgres://writ:writ@postgres:5432/writ
+      WRIT_SECRET: ${WRIT_SECRET:?set WRIT_SECRET in .env}
+      PUBLIC_URL: ${PUBLIC_URL:-http://localhost:3000}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  console:
+    build: .
+    working_dir: /app/apps/console
+    command: ["bun", "run", "start"]
+    environment:
+      GATEWAY_URL: http://gateway:8790
+    ports:
+      - "${WRIT_PORT:-3000}:3000"
+    depends_on:
+      - gateway
+
+volumes:
+  postgres:

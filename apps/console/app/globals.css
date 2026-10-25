@@ -1,0 +1,238 @@
+@import "tailwindcss";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+
+/*
+ * Writ's palette: ink on white, with one colour that means "a person is needed": seal red.
+ * Everything else stays quiet so that colour is never lost.
+ */
+:root {
+  --bg: #fbfbfa;
+  --surface: #ffffff;
+  --sunken: #f3f3f1;
+  --line: #e8e7e3;
+  --line-strong: #d4d3ce;
+  --fg: #141413;
+  --fg-muted: #5f5e59;
+  --fg-faint: #9b9a94;
+  --seal: #cf3f1c;
+  --seal-soft: color-mix(in oklab, var(--seal) 10%, transparent);
+  --ok: #1b7a4b;
+  --ok-soft: color-mix(in oklab, var(--ok) 11%, transparent);
+  --on-ok: #ffffff;
+  --danger: #b4233c;
+  --danger-soft: color-mix(in oklab, var(--danger) 10%, transparent);
+  --read: #4f6478;
+  --write: #4b4fc4;
+  --send: #b06a00;
+  --destructive: #b4233c;
+  --shadow: 0 1px 2px rgb(20 20 19 / 0.04), 0 8px 24px -12px rgb(20 20 19 / 0.12);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e0e0d;
+    --surface: #161615;
+    --sunken: #1c1c1b;
+    --line: #272725;
+    --line-strong: #393936;
+    --fg: #edece8;
+    --fg-muted: #a3a29c;
+    --fg-faint: #6d6c67;
+    --seal: #f0643e;
+    --ok: #4cc38a;
+    --on-ok: #0b1f14;
+    --danger: #f2667f;
+    --read: #93a7ba;
+    --write: #9a9dff;
+    --send: #f0a83c;
+    --destructive: #f2667f;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-sunken: var(--sunken);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-faint: var(--fg-faint);
+  --color-seal: var(--seal);
+  --color-seal-soft: var(--seal-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, "SF Mono", Menlo, monospace;
+  --shadow-card: var(--shadow);
+}
+
+html {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--bg);
+  min-height: 100dvh;
+}
+
+::selection {
+  background: var(--seal-soft);
+}
+
+:focus-visible {
+  outline: 2px solid var(--seal);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Component classes sit in a layer so Tailwind utilities (w-auto, h-8…) can override them. */
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 8px;
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--fg);
+    font-weight: 500;
+    white-space: nowrap;
+    transition:
+      background-color 120ms,
+      border-color 120ms,
+      color 120ms,
+      transform 80ms;
+  }
+  .btn:hover {
+    background: var(--sunken);
+  }
+  .btn:active {
+    transform: translateY(0.5px);
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .btn svg {
+    width: 15px;
+    height: 15px;
+  }
+  .btn-primary {
+    background: var(--fg);
+    border-color: var(--fg);
+    color: var(--bg);
+  }
+  .btn-primary:hover {
+    background: color-mix(in oklab, var(--fg) 85%, var(--bg));
+  }
+  .btn-approve {
+    background: var(--ok);
+    border-color: var(--ok);
+    color: var(--on-ok);
+  }
+  .btn-approve:hover {
+    background: color-mix(in oklab, var(--ok) 88%, #000);
+  }
+  .btn-ghost {
+    background: transparent;
+    border-color: transparent;
+    color: var(--fg-muted);
+  }
+  .btn-ghost:hover {
+    background: var(--sunken);
+    color: var(--fg);
+  }
+  .btn-danger {
+    color: var(--danger);
+  }
+  .btn-sm {
+    height: 28px;
+    padding: 0 9px;
+    font-size: 13px;
+  }
+
+  .input {
+    width: 100%;
+    height: 34px;
+    padding: 0 10px;
+    border-radius: 8px;
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--fg);
+    transition: border-color 120ms;
+  }
+  .input::placeholder {
+    color: var(--fg-faint);
+  }
+  .input:focus {
+    outline: none;
+    border-color: var(--fg-muted);
+  }
+  textarea.input {
+    height: auto;
+    padding: 8px 10px;
+    line-height: 1.5;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+  }
+}
+
+@keyframes seal-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+.enter {
+  animation: seal-in 220ms ease-out both;
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--seal) 45%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 6px transparent;
+  }
+}
+.pulse {
+  animation: pulse-ring 1.6s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enter,
+  .pulse {
+    animation: none;
+  }
+}
