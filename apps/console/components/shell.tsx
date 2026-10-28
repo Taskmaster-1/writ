@@ -14,7 +14,7 @@ const NAV = [
   { href: "/", label: "Approvals", icon: FileCheck2 },
   { href: "/activity", label: "Activity", icon: Activity },
   { href: "/agents", label: "Agents", icon: Bot },
-  { href: "/upstreams", label: "Upstreams", icon: Plug },
+  { href: "/upstreams", label: "Tools", icon: Plug },
   { href: "/rules", label: "Rules", icon: Scale },
 ];
 

@@ -32,12 +32,12 @@ export default function UpstreamsPage() {
   return (
     <>
       <PageHeader
-        title="Upstreams"
-        description="The MCP servers behind Writ. Agents see their tools as <upstream>__<tool>, and every call to them goes through your rules."
+        title="Tools"
+        description="The apps your agents can use through Writ, such as GitHub, Linear or your inbox. Their passwords and keys stay here, never on the agent's machine."
         actions={
           <button type="button" className="btn btn-primary" onClick={() => setAdding(true)}>
             <Plus />
-            Add upstream
+            Connect tool
           </button>
         }
       />
@@ -46,15 +46,15 @@ export default function UpstreamsPage() {
         <Skeleton />
       ) : list.length === 0 ? (
         <Empty
-          title="No upstreams yet"
+          title="No tools connected yet"
           action={
             <button type="button" className="btn btn-primary" onClick={() => setAdding(true)}>
-              Add your first upstream
+              Connect your first tool
             </button>
           }
         >
-          Any MCP server over HTTP: GitHub (api.githubcopilot.com/mcp), Linear, Sentry, or one you
-          run yourself.
+          Connect anything your agents should use: GitHub, Linear, Sentry, your inbox, or a server
+          you run yourself. Writ speaks MCP, the standard way agents talk to tools.
         </Empty>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
@@ -68,28 +68,46 @@ export default function UpstreamsPage() {
                 !u.enabled && "opacity-60",
               )}
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
+                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-paper font-serif text-[20px] text-paper-ink">
+                  {u.name.charAt(0).toUpperCase()}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="flex items-center gap-2">
+                    <span className="truncate font-serif text-[18px] font-medium text-fg">
+                      {u.name}
+                    </span>
+                    {u.trusted ? (
+                      <span className="rounded bg-sunken px-1.5 text-[11px] text-fg-muted">
+                        trusted
+                      </span>
+                    ) : null}
+                    {!u.enabled ? (
+                      <span className="rounded bg-sunken px-1.5 text-[11px] text-fg-muted">
+                        off
+                      </span>
+                    ) : null}
+                  </p>
+                  <p className="truncate text-[13px] text-fg-muted">{host(u.url)}</p>
+                </div>
                 <span
                   className={cx(
-                    "size-2 rounded-full",
+                    "flex shrink-0 items-center gap-1.5 text-[12px]",
                     u.status === "ok"
-                      ? "bg-ok"
+                      ? "text-ok"
                       : u.status === "error"
-                        ? "bg-danger"
-                        : "bg-line-strong",
+                        ? "text-danger"
+                        : "text-fg-faint",
                   )}
-                />
-                <span className="font-mono text-[14px] font-medium text-fg">{u.name}</span>
-                {u.trusted ? (
-                  <span className="rounded bg-sunken px-1.5 text-[11px] text-fg-muted">
-                    trusted
-                  </span>
-                ) : null}
-                {!u.enabled ? (
-                  <span className="rounded bg-sunken px-1.5 text-[11px] text-fg-muted">off</span>
-                ) : null}
+                >
+                  <span className="size-1.5 rounded-full bg-current" />
+                  {u.status === "ok"
+                    ? "Connected"
+                    : u.status === "error"
+                      ? "Can't reach"
+                      : "Not checked"}
+                </span>
               </div>
-              <p className="mt-1 truncate text-[13px] text-fg-muted">{host(u.url)}</p>
               {u.status === "error" && u.lastError ? (
                 <p className="mt-2 line-clamp-2 text-[12px] text-danger">{u.lastError}</p>
               ) : null}
@@ -98,7 +116,7 @@ export default function UpstreamsPage() {
         </div>
       )}
 
-      <Sheet open={adding} onClose={() => setAdding(false)} title="Add upstream" width={560}>
+      <Sheet open={adding} onClose={() => setAdding(false)} title="Connect a tool" width={560}>
         <AddUpstream
           onAdded={(id) => {
             setAdding(false);

@@ -75,3 +75,24 @@ export function DecisionBadge({ decision }: { decision: Decision }) {
     </span>
   );
 }
+
+/** A name's initial in a seal-like circle, standing in for an avatar. Size it with className. */
+export function Monogram({
+  name,
+  className = "grid size-8 text-[15px]",
+}: {
+  name: string;
+  className?: string;
+}) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cx(
+        "shrink-0 place-items-center rounded-full border border-paper-line bg-surface font-serif text-paper-ink",
+        className,
+      )}
+    >
+      {name.charAt(0).toUpperCase()}
+    </span>
+  );
+}

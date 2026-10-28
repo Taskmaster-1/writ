@@ -3,6 +3,7 @@
 import { Check } from "lucide-react";
 import Link from "next/link";
 import { ApprovalCard } from "@/components/approval-card";
+import { HowItWorks, WritInBrief } from "@/components/how-it-works";
 import { ErrorNote, PageHeader, Skeleton } from "@/components/page";
 import { api, errorText } from "@/lib/api";
 import { cx } from "@/lib/format";
@@ -33,13 +34,13 @@ export default function ApprovalsPage() {
     <>
       <PageHeader
         title="Approvals"
-        description="Calls your agents made that need a person. Approve, edit and approve, or deny with a note the agent will read."
+        description="Things your agents want to do that need your yes. Approve, change the details first, or deny with a note the agent will read."
       />
       {pending.error ? <ErrorNote>{errorText(pending.error)}</ErrorNote> : null}
       {!calls ? (
         <Skeleton className="h-56" />
       ) : calls.length > 0 ? (
-        <div className="space-y-4">
+        <div className="max-w-[720px] space-y-6">
           {[...calls].reverse().map((call) => (
             <ApprovalCard
               key={call.id}
@@ -77,8 +78,10 @@ function AllClear({ last24h }: { last24h: Partial<Record<string, number>> }) {
           <Check className="size-5" />
         </span>
         <div>
-          <p className="text-[15px] font-medium text-fg">Nothing needs you</p>
-          <p className="text-fg-muted">New requests appear here the moment an agent makes them.</p>
+          <p className="font-serif text-[20px] font-medium text-fg">Nothing needs you right now</p>
+          <p className="text-fg-muted">
+            When an agent tries something that needs your yes, it appears here right away.
+          </p>
         </div>
       </div>
       <dl className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-4">
@@ -103,22 +106,22 @@ function GetStarted({ hasUpstream, hasAgent }: { hasUpstream: boolean; hasAgent:
   const steps = [
     {
       done: hasUpstream,
-      title: "Add an upstream",
-      body: "An MCP server whose tools your agents should use: GitHub, Linear, your own.",
+      title: "Connect a tool",
+      body: "Something your agents should be able to use, such as GitHub, Linear or your inbox (any MCP server).",
       href: "/upstreams?add=1",
-      cta: "Add upstream",
+      cta: "Connect tool",
     },
     {
       done: hasAgent,
-      title: "Create an agent",
-      body: "Each agent gets its own token, so rules and the audit log know who did what.",
+      title: "Add an agent",
+      body: "Give each AI agent (Claude Code, Cursor, a bot) its own key, so you always know who did what.",
       href: "/agents?add=1",
-      cta: "Create agent",
+      cta: "Add agent",
     },
     {
       done: false,
-      title: "Connect it",
-      body: "Point Claude Code, Cursor or any MCP client at Writ. Calls that need you show up here.",
+      title: "Point the agent at Writ",
+      body: "Paste one command into Claude Code or Cursor. From then on, anything that needs you shows up on this page.",
       href: "/agents",
       cta: "See how",
     },
@@ -126,17 +129,19 @@ function GetStarted({ hasUpstream, hasAgent }: { hasUpstream: boolean; hasAgent:
   const next = steps.findIndex((s) => !s.done);
   return (
     <div className="card overflow-hidden">
-      <div className="border-b border-line px-6 py-5">
-        <p className="text-[15px] font-medium text-fg">
-          Put Writ between your agents and their tools
-        </p>
-        <p className="mt-1 text-fg-muted">Three steps, about two minutes.</p>
+      <div className="border-b border-paper-line bg-paper px-6 py-7 sm:px-8">
+        <WritInBrief />
+        <HowItWorks className="mt-6" />
+      </div>
+      <div className="px-6 pt-6 pb-2 sm:px-8">
+        <p className="font-serif text-[20px] font-medium text-fg">Set it up</p>
+        <p className="mt-0.5 text-fg-muted">Three steps, about two minutes.</p>
       </div>
       <ol>
         {steps.map((s, i) => (
           <li
             key={s.title}
-            className="flex items-start gap-4 border-b border-line px-6 py-4 last:border-b-0"
+            className="flex items-start gap-4 border-b border-line px-6 py-4 last:border-b-0 sm:px-8"
           >
             <span
               className={cx(

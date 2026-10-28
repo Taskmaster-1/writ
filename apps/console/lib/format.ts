@@ -35,3 +35,17 @@ export function cx(...parts: (string | false | null | undefined)[]): string {
 export function pretty(value: unknown): string {
   return JSON.stringify(value, null, 2);
 }
+
+/** `send_email` → "send email", `createEvent` → "create event". */
+export function humanize(tool: string): string {
+  return tool
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/[_-]+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+/** A call's tool without its upstream prefix: `demo__send_email` → `send_email`. */
+export function toolName(call: { tool: string; upstream: string | null }): string {
+  return call.upstream ? call.tool.slice(call.upstream.length + 2) : call.tool;
+}

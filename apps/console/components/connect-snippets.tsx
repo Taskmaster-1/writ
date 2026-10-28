@@ -15,7 +15,7 @@ export function ConnectSnippets({ token, agent }: { token: string; agent: string
   const snippets: Record<Client, { value: string; note: string; multiline?: boolean }> = {
     claude: {
       value: `claude mcp add --transport http writ ${url} \\\n  --header "Authorization: Bearer ${token}"`,
-      note: "Run in a terminal. Claude Code then sees your upstreams' tools as mcp__writ__…",
+      note: "Run in a terminal. Claude Code then sees your connected tools as mcp__writ__…",
       multiline: true,
     },
     cursor: {
