@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { EffectBadge, StatusBadge } from "@/components/badges";
+import { EffectBadge, Monogram, StatusBadge } from "@/components/badges";
 import { CallDetail } from "@/components/call-detail";
 import { Segmented } from "@/components/controls";
 import { Empty, ErrorNote, PageHeader, Skeleton } from "@/components/page";
 import { Sheet } from "@/components/sheet";
 import { api, type Call, type CallStatus, errorText } from "@/lib/api";
-import { ago, dateTime } from "@/lib/format";
+import { ago, dateTime, humanize, toolName } from "@/lib/format";
 import { useCallEvents } from "@/lib/live";
 import { useApi } from "@/lib/use-api";
 
@@ -58,7 +58,7 @@ export default function ActivityPage() {
     <>
       <PageHeader
         title="Activity"
-        description="Every tool call any agent made through Writ, what the policy said, who decided, and what came back."
+        description="Everything your agents did through Writ: what they tried, whether it was allowed, who decided, and what happened."
         actions={
           <Segmented
             label="Filter"
@@ -73,7 +73,7 @@ export default function ActivityPage() {
         <Skeleton className="h-64" />
       ) : list.length === 0 ? (
         <Empty title="Nothing here yet">
-          Calls show up the moment a connected agent makes one.
+          As soon as a connected agent uses a tool, it shows up here.
         </Empty>
       ) : (
         <div className="card overflow-hidden">
@@ -83,16 +83,21 @@ export default function ActivityPage() {
                 <button
                   type="button"
                   onClick={() => setOpen(c)}
-                  className="grid w-full grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1 px-4 py-3 text-left transition-colors hover:bg-sunken/60 sm:grid-cols-[120px_1fr_auto_auto]"
+                  className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-sunken/60 sm:px-5"
                 >
-                  <span className="truncate font-mono text-[13px] text-fg-muted sm:order-none">
-                    {c.agent}
-                  </span>
-                  <span className="col-span-2 flex min-w-0 items-center gap-2 sm:col-span-1">
-                    <span className="truncate font-mono text-[13px] font-medium text-fg">
-                      {c.tool}
+                  <Monogram name={c.agent} />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-fg">
+                      <span className="font-medium">{c.agent}</span>{" "}
+                      <span className="text-fg-muted">·</span> {humanize(toolName(c))}
+                      {c.upstream ? <span className="text-fg-muted"> on {c.upstream}</span> : null}
                     </span>
-                    <EffectBadge effect={c.effect} />
+                    <span className="mt-0.5 flex items-center gap-2">
+                      <EffectBadge effect={c.effect} />
+                      <span className="truncate font-mono text-[11.5px] text-fg-faint">
+                        {c.tool}
+                      </span>
+                    </span>
                   </span>
                   <StatusBadge status={c.status} />
                   <time
@@ -117,8 +122,8 @@ export default function ActivityPage() {
       <Sheet
         open={open !== null}
         onClose={() => setOpen(null)}
-        title={open?.tool ?? ""}
-        description={open ? `${open.agent} · ${dateTime(open.createdAt)}` : undefined}
+        title={open ? `${open.agent} · ${humanize(toolName(open))}` : ""}
+        description={open ? `${open.tool} · ${dateTime(open.createdAt)}` : undefined}
         width={620}
       >
         {open ? <CallDetail call={list?.find((c) => c.id === open.id) ?? open} /> : null}

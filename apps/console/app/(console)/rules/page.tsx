@@ -71,7 +71,7 @@ export default function RulesPage() {
     <>
       <PageHeader
         title="Rules"
-        description="What happens to each call. A matching Block always wins; otherwise the first matching rule; otherwise the default for the tool's effect."
+        description="Decide what agents may do on their own, what needs your yes, and what never happens. Out of the box: reading runs, everything else asks you."
       />
       {policy.error ? <ErrorNote>{errorText(policy.error)}</ErrorNote> : null}
       {error ? (
@@ -84,7 +84,9 @@ export default function RulesPage() {
       ) : (
         <div className="space-y-8">
           <section className="card divide-y divide-line">
-            <h2 className="px-5 pt-4 pb-3 font-medium text-fg">Defaults by effect</h2>
+            <h2 className="px-5 pt-4 pb-3 font-serif text-[19px] font-medium text-fg">
+              What happens by default
+            </h2>
             {EFFECTS.map(({ effect, hint }) => (
               <div key={effect} className="flex flex-wrap items-center gap-3 px-5 py-3">
                 <div className="min-w-0 flex-1">
@@ -122,7 +124,12 @@ export default function RulesPage() {
 
           <section>
             <div className="mb-3 flex items-center justify-between gap-3">
-              <h2 className="font-medium text-fg">Rules</h2>
+              <div>
+                <h2 className="font-serif text-[19px] font-medium text-fg">Your rules</h2>
+                <p className="text-[13px] text-fg-muted">
+                  Exceptions to the defaults, checked top to bottom. A Block always wins.
+                </p>
+              </div>
               <div className="flex gap-2">
                 {dirty ? (
                   <button
@@ -184,9 +191,10 @@ export default function RulesPage() {
           </section>
 
           <section className="card px-5 py-4">
-            <h2 className="font-medium text-fg">Test the saved policy</h2>
+            <h2 className="font-serif text-[19px] font-medium text-fg">Try it out</h2>
             <p className="mt-0.5 mb-4 text-[13px] text-fg-muted">
-              See what would happen to a call, without making it.
+              Describe something an agent might do, and see what Writ would do with it. Nothing
+              actually runs.
             </p>
             <PolicyTester />
           </section>

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { Call } from "@/lib/api";
-import { dateTime, pretty } from "@/lib/format";
+import { dateTime } from "@/lib/format";
+import { ArgumentList } from "./approval-args";
 import { DecisionBadge, EffectBadge, StatusBadge } from "./badges";
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
@@ -20,10 +21,37 @@ function Code({ children }: { children: string }) {
   );
 }
 
+/** What happened to a call, as one sentence a person can read without knowing the policy model. */
+function outcome(call: Call): string {
+  const by = call.decidedBy ?? "A person";
+  switch (call.status) {
+    case "pending":
+      return "Waiting for someone to approve or deny it. Nothing has happened yet.";
+    case "approved":
+    case "running":
+      return `${by} approved it, and it is running now.`;
+    case "succeeded":
+      return call.decidedBy
+        ? `${by} approved it, and it ran.`
+        : `It ran on its own: ${call.reason.charAt(0).toLowerCase()}${call.reason.slice(1)}`;
+    case "failed":
+      return "Writ let it through, but the tool itself returned an error.";
+    case "denied":
+      return `${by} denied it, so it never ran. The agent was told why.`;
+    case "blocked":
+      return `Writ blocked it, so it never ran. ${call.reason}`;
+    case "expired":
+      return "Nobody decided in time, so it never ran.";
+  }
+}
+
 /** Everything Writ recorded about one call. */
 export function CallDetail({ call }: { call: Call }) {
   return (
     <div className="space-y-6">
+      <p className="rounded-xl bg-paper px-4 py-3 font-serif text-[17px] leading-snug text-fg">
+        {outcome(call)}
+      </p>
       <dl className="divide-y divide-line">
         <Row label="Status">
           <StatusBadge status={call.status} />
@@ -37,7 +65,7 @@ export function CallDetail({ call }: { call: Call }) {
             <EffectBadge effect={call.effect} />
           </span>
         </Row>
-        <Row label="Policy">
+        <Row label="Rule said">
           <span className="flex flex-wrap items-center gap-2">
             <DecisionBadge decision={call.decision} />
             {call.reason}
@@ -55,7 +83,7 @@ export function CallDetail({ call }: { call: Call }) {
           </Row>
         ) : null}
         <Row label="Requested">{dateTime(call.createdAt)}</Row>
-        {call.durationMs !== null ? <Row label="Upstream time">{call.durationMs} ms</Row> : null}
+        {call.durationMs !== null ? <Row label="Took">{call.durationMs} ms</Row> : null}
         {call.sessionId ? (
           <Row label="Session id">
             <span className="font-mono text-[12px] break-all text-fg-muted">{call.sessionId}</span>
@@ -63,13 +91,13 @@ export function CallDetail({ call }: { call: Call }) {
         ) : null}
       </dl>
       <section>
-        <h3 className="eyebrow mb-1.5">Arguments from the agent</h3>
-        <Code>{pretty(call.args)}</Code>
+        <h3 className="eyebrow mb-1.5">What the agent asked for</h3>
+        <ArgumentList args={call.args} />
       </section>
       {call.approvedArgs ? (
         <section>
-          <h3 className="eyebrow mb-1.5">Arguments as approved (edited)</h3>
-          <Code>{pretty(call.approvedArgs)}</Code>
+          <h3 className="eyebrow mb-1.5">What was approved (edited)</h3>
+          <ArgumentList args={call.approvedArgs} />
         </section>
       ) : null}
       {call.output !== null ? (

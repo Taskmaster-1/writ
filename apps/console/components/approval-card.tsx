@@ -3,9 +3,9 @@
 import { ArrowRight, ShieldAlert } from "lucide-react";
 import { useState } from "react";
 import { api, type Call, errorText } from "@/lib/api";
-import { ago, pretty } from "@/lib/format";
+import { ago, humanize, pretty, toolName } from "@/lib/format";
 import { ArgumentList } from "./approval-args";
-import { EffectBadge } from "./badges";
+import { EffectBadge, Monogram } from "./badges";
 import { Mark } from "./brand";
 import { ErrorNote } from "./page";
 
@@ -21,7 +21,7 @@ export function ApprovalCard({ call, onDecided }: { call: Call; onDecided: (c: C
   const [busy, setBusy] = useState<"approve" | "deny" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const edited = draft.trim() !== original.trim();
-  const toolName = call.upstream ? call.tool.slice(call.upstream.length + 2) : call.tool;
+  const tool = toolName(call);
   const shown = edited ? parseArgs(draft) : call.args;
 
   async function decide(approve: boolean) {
@@ -57,7 +57,7 @@ export function ApprovalCard({ call, onDecided }: { call: Call; onDecided: (c: C
           Needs your signature
         </p>
         <div className="mt-3 flex items-end gap-4">
-          <Monogram name={call.agent} />
+          <Monogram name={call.agent} className="hidden size-14 text-[26px] shadow-card sm:grid" />
           <div className="relative min-w-0 flex-1 rounded-2xl bg-surface px-5 py-4 shadow-card">
             <span
               aria-hidden="true"
@@ -68,7 +68,7 @@ export function ApprovalCard({ call, onDecided }: { call: Call; onDecided: (c: C
               <time dateTime={call.createdAt}>{ago(call.createdAt)}</time>
             </p>
             <h2 className="mt-1 font-serif text-[24px] leading-[1.2] font-medium text-fg sm:text-[27px]">
-              {call.agent} wants to {humanize(toolName)}
+              {call.agent} wants to {humanize(tool)}
               {call.upstream ? <span className="text-fg-muted"> on {call.upstream}</span> : null}
             </h2>
           </div>
@@ -92,7 +92,7 @@ export function ApprovalCard({ call, onDecided }: { call: Call; onDecided: (c: C
           </div>
         ) : null}
 
-        <Ticket call={call} toolName={toolName} />
+        <Ticket call={call} toolName={tool} />
 
         <section>
           <div className="mb-2 flex items-center justify-between">
@@ -160,7 +160,7 @@ export function ApprovalCard({ call, onDecided }: { call: Call; onDecided: (c: C
 function Ticket({ call, toolName }: { call: Call; toolName: string }) {
   const facts = [
     { label: "Agent", value: call.agent },
-    { label: "Upstream", value: call.upstream ?? "none" },
+    { label: "Tool", value: call.upstream ?? "none" },
     { label: "Effect", value: <EffectBadge effect={call.effect} /> },
   ];
   return (
@@ -197,27 +197,6 @@ function Ticket({ call, toolName }: { call: Call; toolName: string }) {
       </dl>
     </div>
   );
-}
-
-/** The agent's initial in a seal-like circle, standing in for an avatar. */
-function Monogram({ name }: { name: string }) {
-  return (
-    <span
-      aria-hidden="true"
-      className="hidden size-14 shrink-0 place-items-center rounded-full border border-paper-line bg-surface font-serif text-[26px] text-paper-ink shadow-card sm:grid"
-    >
-      {name.charAt(0).toUpperCase()}
-    </span>
-  );
-}
-
-/** `send_email` → "send email", `createEvent` → "create event". */
-function humanize(tool: string): string {
-  return tool
-    .replace(/([a-z])([A-Z])/g, "$1 $2")
-    .replace(/[_-]+/g, " ")
-    .trim()
-    .toLowerCase();
 }
 
 function parseArgs(text: string): Record<string, unknown> | null {

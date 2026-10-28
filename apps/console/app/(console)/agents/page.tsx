@@ -2,6 +2,7 @@
 
 import { KeyRound, Plus } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
+import { Monogram } from "@/components/badges";
 import { ConnectSnippets } from "@/components/connect-snippets";
 import { Field } from "@/components/controls";
 import { Empty, ErrorNote, PageHeader, Skeleton } from "@/components/page";
@@ -27,7 +28,7 @@ export default function AgentsPage() {
     <>
       <PageHeader
         title="Agents"
-        description="Everything that calls tools through Writ. Each agent has its own token, so rules can treat them differently and the log shows who did what."
+        description="The AI agents that use your tools through Writ. Each one has its own key, so rules can treat them differently and Activity shows who did what."
         actions={
           <button type="button" className="btn btn-primary" onClick={() => setAdding(true)}>
             <Plus />
@@ -75,7 +76,7 @@ export default function AgentsPage() {
         open={issued !== null}
         onClose={() => setIssued(null)}
         title={issued ? `Connect ${issued.agent.name}` : ""}
-        description="Copy the token now. Writ stores only a hash of it, so it can't be shown again."
+        description="Copy this key now. Writ keeps only a fingerprint of it, so it can't be shown again."
         width={600}
       >
         {issued ? (
@@ -124,11 +125,15 @@ function AgentRow({
         revoked && "opacity-55",
       )}
     >
-      <div className="min-w-0 basis-full sm:flex-1 sm:basis-auto">
-        <p className="font-mono text-[14px] font-medium text-fg">{a.name}</p>
-        <p className="truncate text-[13px] text-fg-muted">
-          {a.description || "No description"} · <span className="font-mono">{a.tokenHint}…</span>
-        </p>
+      <div className="flex min-w-0 basis-full items-center gap-3 sm:flex-1 sm:basis-auto">
+        <Monogram name={a.name} className="grid size-10 text-[18px]" />
+        <div className="min-w-0">
+          <p className="font-serif text-[18px] font-medium text-fg">{a.name}</p>
+          <p className="truncate text-[13px] text-fg-muted">
+            {a.description || "No description"} · key{" "}
+            <span className="font-mono">{a.tokenHint}…</span>
+          </p>
+        </div>
       </div>
       <span className="mr-auto text-[13px] text-fg-muted sm:mr-0">
         {revoked
@@ -147,7 +152,7 @@ function AgentRow({
               void run(async () => {
                 if (
                   !window.confirm(
-                    `Issue a new token for ${a.name}? The current one stops working now.`,
+                    `Issue a new key for ${a.name}? The current one stops working now.`,
                   )
                 )
                   return;
@@ -156,7 +161,7 @@ function AgentRow({
             }
           >
             <KeyRound />
-            New token
+            New key
           </button>
           <button
             type="button"
@@ -166,7 +171,7 @@ function AgentRow({
               void run(async () => {
                 if (
                   !window.confirm(
-                    `Revoke ${a.name}? Its sessions end now and its token stops working.`,
+                    `Revoke ${a.name}? Its sessions end now and its key stops working.`,
                   )
                 )
                   return;
@@ -234,7 +239,7 @@ function NewAgent({ onCreated }: { onCreated: (i: Issued) => void }) {
       </Field>
       {error ? <ErrorNote>{error}</ErrorNote> : null}
       <button type="submit" className="btn btn-primary" disabled={busy}>
-        Create and show token
+        Create and show key
       </button>
     </form>
   );
