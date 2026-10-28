@@ -1,20 +1,25 @@
 @import "tailwindcss";
 @import "@fontsource-variable/geist";
 @import "@fontsource-variable/geist-mono";
+@import "@fontsource-variable/newsreader";
 
 /*
- * Writ's palette: ink on white, with one colour that means "a person is needed": seal red.
- * Everything else stays quiet so that colour is never lost.
+ * Writ's palette: ink on warm paper, with one colour that means "a person is needed": seal red.
+ * Everything else stays quiet so that colour is never lost. `paper` is the parchment tint used
+ * for things that ask for a signature (approval cards and their tickets).
  */
 :root {
-  --bg: #fbfbfa;
+  --bg: #f5f3ee;
   --surface: #ffffff;
-  --sunken: #f3f3f1;
-  --line: #e8e7e3;
-  --line-strong: #d4d3ce;
-  --fg: #141413;
-  --fg-muted: #5f5e59;
-  --fg-faint: #9b9a94;
+  --sunken: #f1eee7;
+  --line: #e7e3da;
+  --line-strong: #d4cfc3;
+  --fg: #1c1b17;
+  --fg-muted: #615d53;
+  --fg-faint: #9a9589;
+  --paper: #f5eedf;
+  --paper-line: #e2d5ba;
+  --paper-ink: #85582a;
   --seal: #cf3f1c;
   --seal-soft: color-mix(in oklab, var(--seal) 10%, transparent);
   --ok: #1b7a4b;
@@ -32,14 +37,17 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0e0e0d;
-    --surface: #161615;
-    --sunken: #1c1c1b;
-    --line: #272725;
-    --line-strong: #393936;
-    --fg: #edece8;
-    --fg-muted: #a3a29c;
-    --fg-faint: #6d6c67;
+    --bg: #0f0e0c;
+    --surface: #171613;
+    --sunken: #1d1c18;
+    --line: #2a2823;
+    --line-strong: #3c3932;
+    --fg: #eeebe3;
+    --fg-muted: #a7a297;
+    --fg-faint: #6f6b62;
+    --paper: #221d15;
+    --paper-line: #3b3225;
+    --paper-ink: #d9b47c;
     --seal: #f0643e;
     --ok: #4cc38a;
     --on-ok: #0b1f14;
@@ -68,7 +76,11 @@
   --color-ok-soft: var(--ok-soft);
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
+  --color-paper: var(--paper);
+  --color-paper-line: var(--paper-line);
+  --color-paper-ink: var(--paper-ink);
   --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Newsreader Variable", "Iowan Old Style", Georgia, serif;
   --font-mono: "Geist Mono Variable", ui-monospace, "SF Mono", Menlo, monospace;
   --shadow-card: var(--shadow);
 }
@@ -103,6 +115,15 @@ body {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--fg-faint);
+}
+
+/* Small caps label on parchment, as on a form or a ticket. */
+@utility label {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--paper-ink);
 }
 
 @utility tabular {

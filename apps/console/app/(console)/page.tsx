@@ -39,7 +39,7 @@ export default function ApprovalsPage() {
       {!calls ? (
         <Skeleton className="h-56" />
       ) : calls.length > 0 ? (
-        <div className="space-y-4">
+        <div className="max-w-[720px] space-y-6">
           {[...calls].reverse().map((call) => (
             <ApprovalCard
               key={call.id}
